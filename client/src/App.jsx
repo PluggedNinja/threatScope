@@ -1,6 +1,6 @@
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { AnimatePresence, motion } from 'framer-motion';
-import { api, connectWs, getToken, clearToken, getTenant, setTenant } from './api.js';
+import { api, connectWs, getToken, setToken, clearToken, getTenant, setTenant } from './api.js';
 import Landing from './components/Landing.jsx';
 import LoginModal from './components/LoginModal.jsx';
 import AdminPanel from './components/AdminPanel.jsx';
@@ -555,6 +555,24 @@ function Root() {
     const onHash = () => setRoute((location.hash || '#/').replace(/^#/, ''));
     window.addEventListener('hashchange', onHash);
     return () => window.removeEventListener('hashchange', onHash);
+  }, []);
+
+  // Deep-link: aceita ?token=tsk_... (na query OU no hash) para abrir o MANAGER já
+  // logado a partir de outra página. Consome o token, LIMPA a URL e vai ao painel.
+  useEffect(() => {
+    let tok = '';
+    try {
+      tok = new URLSearchParams(location.search).get('token') || '';
+      if (!tok && location.hash.includes('?')) {
+        tok = new URLSearchParams(location.hash.slice(location.hash.indexOf('?') + 1)).get('token') || '';
+      }
+    } catch {}
+    if (tok) {
+      setToken(tok);
+      setTok(tok);
+      try { history.replaceState(null, '', location.pathname + '#/painel'); } catch {}
+      setRoute('/painel');
+    }
   }, []);
 
   const loadTenants = useCallback(() => {
