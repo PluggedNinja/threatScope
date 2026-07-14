@@ -1,0 +1,19 @@
+{
+  "name": "threatscope",
+  "version": "1.0.0",
+  "private": true,
+  "description": "SSHONEY — central de honeypots SSH: agentes nos servidores reportam brute-force para um dashboard militar",
+  "scripts": {
+    "setup": "npm install && cd server && npm install && cd ../client && npm install && cd ../agent && npm install",
+    "setup:manager": "npm install && cd server && npm install && cd ../client && npm install",
+    "setup:agent": "cd agent && npm install",
+    "dev": "concurrently -n \"MANAGER,UI\" -c \"green,cyan\" \"npm:dev:server\" \"npm:dev:client\"",
+    "dev:server": "cd server && npm start",
+    "dev:client": "cd client && npm run dev",
+    "agent": "cd agent && npm start",
+    "build": "cd client && npm run build"
+  },
+  "devDependencies": {
+    "concurrently": "^9.1.0"
+  }
+}
