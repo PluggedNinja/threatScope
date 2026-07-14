@@ -3,7 +3,9 @@
 // Authorization e, em downloads/WS, como ?token=. O admin pode escolher um
 // tenant (?tenant=) para ver os sensores de outra conta.
 
-const base = '';
+// Prefixo do app para deploy sob subpath no nginx (ex.: /threatscope). Vem do base
+// do Vite no build (import.meta.env.BASE_URL). Em '/' vira '' (sem prefixo) — dev igual.
+const base = (import.meta.env.BASE_URL || '/').replace(/\/+$/, '');
 
 const TOKEN_KEY = 'ts-account-token';
 const TENANT_KEY = 'ts-admin-tenant';
@@ -28,7 +30,7 @@ function withTenant(url) {
 // pois window.open/anchor não enviam headers.
 function dl(url) {
   const t = getToken();
-  let u = withTenant(url);
+  let u = base + withTenant(url);
   if (t) u += (u.includes('?') ? '&' : '?') + 'token=' + encodeURIComponent(t);
   return u;
 }
@@ -154,7 +156,7 @@ export function connectWs(onMessage, onStatus) {
   let ws, alive = true, retry = 0;
   const proto = location.protocol === 'https:' ? 'wss' : 'ws';
   const tok = getToken();
-  const url = `${proto}://${location.host}/ws${tok ? `?token=${encodeURIComponent(tok)}` : ''}`;
+  const url = `${proto}://${location.host}${base}/ws${tok ? `?token=${encodeURIComponent(tok)}` : ''}`;
 
   function open() {
     ws = new WebSocket(url);
