@@ -2,7 +2,7 @@ import { defineConfig, createLogger } from 'vite';
 import react from '@vitejs/plugin-react';
 
 // O barulho "[vite] ws proxy socket error: write ECONNABORTED" é impresso pelo
-// LOGGER INTERNO do Vite quando o backend (:4000) reinicia ou o socket fecha no
+// LOGGER INTERNO do Vite quando o backend (:5000) reinicia ou o socket fecha no
 // meio de uma escrita. Não é um bug do app — o cliente já reconecta sozinho.
 // Um handler de erro no proxy roda EM PARALELO ao log do Vite, então não basta:
 // aqui filtramos o próprio logger para engolir só essas linhas ruidosas.
@@ -17,7 +17,7 @@ logger.error = (msg, opts) => {
     const agora = Date.now();
     if (agora - avisou > 5000) {
       avisou = agora;
-      console.log('\x1b[33m[proxy] backend :4000 indisponível no momento — reconectando quando voltar…\x1b[0m');
+      console.log('\x1b[33m[proxy] backend :5000 indisponível no momento — reconectando quando voltar…\x1b[0m');
     }
     return;
   }
@@ -38,12 +38,12 @@ export default defineConfig({
     strictPort: true,
     proxy: {
       '/api': {
-        target: 'http://localhost:4000',
+        target: 'http://localhost:5000',
         changeOrigin: true,
         configure: (proxy) => quietProxy(proxy),
       },
       '/ws': {
-        target: 'ws://localhost:4000',
+        target: 'ws://localhost:5000',
         ws: true,
         configure: (proxy) => quietProxy(proxy),
       },

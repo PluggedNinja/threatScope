@@ -282,7 +282,7 @@ export default function AttackMap({ filters, pings = 0 }) {
         {!loading && raw.geoDisabled && <div className="atk-msg">🔒 GeoIP desligado (GEOIP_DISABLE=1). Ligue para ver o mapa.</div>}
         {!loading && !raw.geoDisabled && !err && points.length === 0 &&
           <div className="atk-msg">Sem ataques nos últimos {windowLabel}. Aumente a janela ⏱ (no topo do mapa) para ver o histórico. 🛡️</div>}
-        {!loading && err && <div className="atk-msg">Sem conexão com a central (:4000).</div>}
+        {!loading && err && <div className="atk-msg">Sem conexão com a central (:5000).</div>}
 
         {hover && hover.agentNode && (
           <div className="atk-tip" style={{ left: `${(hover.s.x / W) * 100}%`, top: `${(hover.s.y / H) * 100}%` }}>

@@ -55,7 +55,7 @@ export default function WebDashboard({ agents = [], onRefreshAgents, onConfigAge
       ]);
       setStats(s); setGroups(g); setRows(a.rows);
     } catch {
-      toast.push({ type: 'warn', title: 'Sem conexão', message: 'Não consegui falar com a API (:4000).' });
+      toast.push({ type: 'warn', title: 'Sem conexão', message: 'Não consegui falar com a API (:5000).' });
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [fkey]);

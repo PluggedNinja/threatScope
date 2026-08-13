@@ -176,7 +176,7 @@ export default function Landing({ loggedIn = false, user, onLogin, onLogout, onO
               <li>Instale o <b>Node.js 18+</b> no servidor que quer proteger.</li>
               <li>Descompacte o pacote e rode <code>npm install</code> na pasta.</li>
               <li>Suba o sensor: <code>sudo npm start</code> (sudo por causa da porta 22 e do firewall). No Windows, execute <code>start-agent.bat</code> como Administrador.</li>
-              <li>No seu painel, registre o IP do servidor (porta <code>4000</code>) e libere essa porta <b>apenas para o IP da central</b>.</li>
+              <li>No seu painel, registre o IP do servidor (porta <code>5001</code>) e libere essa porta <b>apenas para o IP da central</b>.</li>
             </ol>
             <p className="ln-muted tiny">O sensor WEB apenas <b>lê</b> os logs — não altera nada no servidor. A central puxa as capturas (arquitetura pull), então o sensor não precisa alcançar a central.</p>
           </div>

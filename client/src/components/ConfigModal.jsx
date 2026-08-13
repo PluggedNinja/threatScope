@@ -46,7 +46,7 @@ export default function ConfigModal({ open, onClose }) {
 
           <label className="cfg-row">
             <span>Porta da API <span className="tiny amber">(reiniciar p/ valer)</span></span>
-            <input type="number" min="1" max="65535" value={c.apiPort} onChange={(e) => set('apiPort', Number(e.target.value))} />
+            <input type="number" min="5000" max="65535" value={c.apiPort} onChange={(e) => set('apiPort', Number(e.target.value))} />
           </label>
 
           <label className="cfg-row">
@@ -61,7 +61,7 @@ export default function ConfigModal({ open, onClose }) {
 
           <label className="cfg-row">
             <span>URL pública da central <span className="tiny muted">(embutida no agente baixado)</span></span>
-            <input type="text" placeholder="http://203.0.113.10:4000" value={c.publicUrl} onChange={(e) => set('publicUrl', e.target.value)} />
+            <input type="text" placeholder="http://203.0.113.10:5000" value={c.publicUrl} onChange={(e) => set('publicUrl', e.target.value)} />
           </label>
 
           <div className="cfg-sec">GeoIP & Reputação</div>

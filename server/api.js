@@ -760,6 +760,10 @@ export function createApi({ broadcast = () => {}, onAgentAdded = () => {}, autob
   app.post('/api/agents', async (req, res) => {
     const { host, port, name, owner } = req.body || {};
     if (!host || !String(host).trim()) return res.status(400).json({ error: 'informe o host/IP do agente' });
+    const agentPort = Number(port) || 5001;
+    if (!Number.isInteger(agentPort) || agentPort < 5000 || agentPort > 65535) {
+      return res.status(400).json({ error: 'a porta do agente deve estar entre 5000 e 65535' });
+    }
     // ANTI-SSRF: tenant (não-admin) não pode apontar o coletor para rede interna/
     // loopback/metadata — senão a central entregaria o token de coleta a esse host.
     // O admin (você) continua podendo registrar sensores em IPs internos da sua rede.
@@ -768,7 +772,7 @@ export function createApi({ broadcast = () => {}, onAgentAdded = () => {}, autob
     }
     // não-admin: o sensor nasce vinculado à PRÓPRIA conta. admin: pode indicar o tenant (owner) ou deixar sem dono.
     const ownerId = req.user.role === 'admin' ? (owner || null) : req.user.id;
-    const entry = db.addAgent({ host, port, name, owner: ownerId });
+    const entry = db.addAgent({ host, port: agentPort, name, owner: ownerId });
     if (!entry) return res.status(400).json({ error: 'host inválido' });
     onAgentAdded(entry); // dispara uma coleta imediata
     res.json({ ok: true, agent: entry });
@@ -1044,7 +1048,8 @@ export function createApi({ broadcast = () => {}, onAgentAdded = () => {}, autob
       return res.status(404).json({ error: 'pasta agent/ não encontrada ao lado do server/' });
     }
     const agentId = typeof req.query.id === 'string' ? req.query.id : '';
-    const agentPort = Number(req.query.port) || 4000;
+    const requestedPort = Number(req.query.port) || 5001;
+    const agentPort = Number.isInteger(requestedPort) && requestedPort >= 5000 && requestedPort <= 65535 ? requestedPort : 5001;
     const rawMode = String(req.query.mode || 'ssh').toLowerCase();
     const modeOk = rawMode.split(/[,+\s]+/).every((x) => ['ssh', 'web', 'net', 'both', 'all', ''].includes(x));
     const mode = modeOk ? rawMode : 'ssh';

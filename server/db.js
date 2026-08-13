@@ -99,6 +99,20 @@ export function initDb(dbPath) {
   if (!Array.isArray(store.users)) store.users = [];
   if (!Array.isArray(store.removalRequests)) store.removalRequests = [];
   if (!store.settings || typeof store.settings !== 'object') store.settings = {};
+
+  // Migra instalacoes existentes: central e agentes usavam a mesma porta 4000.
+  let portsMigrated = false;
+  if (store.settings.config && Number(store.settings.config.apiPort) < 5000) {
+    store.settings.config.apiPort = 5000;
+    portsMigrated = true;
+  }
+  for (const agent of store.registry) {
+    if (Number(agent.port) >= 5000) continue;
+    agent.port = 5001;
+    agent.id = `${agent.host}:5001`;
+    portsMigrated = true;
+  }
+  if (portsMigrated) writeStoreSync();
   initInfo.loaded = store.attempts.length;
   return store;
 }
@@ -534,9 +548,10 @@ export function agentTag(entry) { return entry.name || entry.host; }
 
 export function listAgents() { return store.registry; }
 
-export function addAgent({ host, port = 4000, name = '', owner = null } = {}) {
+export function addAgent({ host, port = 5001, name = '', owner = null } = {}) {
   host = String(host || '').trim();
-  port = Number(port) || 4000;
+  port = Number(port) || 5001;
+  if (!Number.isInteger(port) || port < 5000 || port > 65535) return null;
   if (!host) return null;
   const id = `${host}:${port}`;
   const existing = store.registry.find((a) => a.id === id);
@@ -651,7 +666,7 @@ export function setSettings(patch) { store.settings = { ...(store.settings || {}
 // A config vive em store.settings.config (persistida com a base). O .env só serve
 // de SEMENTE na primeira execução; depois disso a interface é a fonte da verdade.
 export const CONFIG_DEFAULTS = {
-  apiPort: 4000,
+  apiPort: 5000,
   pollMs: 5000,
   corsOrigin: '*',
   ingestToken: 'troque-este-token',
@@ -666,7 +681,7 @@ export const CONFIG_DEFAULTS = {
 export function getConfig() { return { ...CONFIG_DEFAULTS, ...((store.settings && store.settings.config) || {}) }; }
 export function setConfig(patch) {
   const next = { ...getConfig(), ...(patch || {}) };
-  next.apiPort = Math.min(65535, Math.max(1, Number(next.apiPort) || CONFIG_DEFAULTS.apiPort));
+  next.apiPort = Math.min(65535, Math.max(5000, Number(next.apiPort) || CONFIG_DEFAULTS.apiPort));
   next.pollMs = Math.max(1000, Number(next.pollMs) || CONFIG_DEFAULTS.pollMs);
   next.geoTtlDays = Math.max(0, Number(next.geoTtlDays) || 0);
   next.corsOrigin = String(next.corsOrigin || '*');
@@ -684,7 +699,7 @@ export function setConfig(patch) {
 export function seedConfigFromEnv(env = {}) {
   if (store.settings && store.settings.config) return getConfig();
   setSettings({ config: {
-    apiPort: Number(env.API_PORT) || CONFIG_DEFAULTS.apiPort,
+    apiPort: Math.min(65535, Math.max(5000, Number(env.API_PORT) || CONFIG_DEFAULTS.apiPort)),
     pollMs: Number(env.POLL_MS) || CONFIG_DEFAULTS.pollMs,
     corsOrigin: env.CORS_ORIGIN || CONFIG_DEFAULTS.corsOrigin,
     ingestToken: env.INGEST_TOKEN || CONFIG_DEFAULTS.ingestToken,

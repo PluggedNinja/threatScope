@@ -18,7 +18,7 @@ por favor dê um prazo razoável antes de tornar o problema público.
 
 - **Auto-update do agente é DESLIGADO por padrão** (`AUTO_UPDATE=0`). A rota
   `/agent/update` grava e executa código; só habilite se confiar na central **e**
-  liberar a porta do agente (padrão `4000/tcp`) **apenas** para o IP da central.
+  liberar a porta do agente (padrão `5001/tcp`) **apenas** para o IP da central.
 - **Atrás de proxy reverso:** ative `TRUST_PROXY=1`. O bypass "localhost = admin"
   vem **desligado por padrão** (`localhostAdmin=false`); só ligue em uso local de
   confiança.

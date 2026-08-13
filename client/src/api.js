@@ -1,4 +1,4 @@
-// Cliente da API PluggedNinja ThreatScope. Usa proxy do Vite (/api -> :4000).
+// Cliente da API PluggedNinja ThreatScope. Usa proxy do Vite (/api -> :5000).
 // Autenticação por TOKEN DE CONTA (multi-tenant): o token vai no header
 // Authorization e, em downloads/WS, como ?token=. O admin pode escolher um
 // tenant (?tenant=) para ver os sensores de outra conta.

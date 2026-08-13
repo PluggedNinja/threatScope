@@ -182,7 +182,7 @@ export default function NetDashboard({ agents = [], onRefreshAgents, onConfigAge
 
   const refresh = useCallback(async () => {
     try { const [s, g, a] = await Promise.all([api.netStats(filters), api.netGrouped(filters), api.netAttempts({ ...filters, limit: 120 })]); setStats(s); setGroups(g); setRows(a.rows); }
-    catch { toast.push({ type: 'warn', title: 'Sem conexão', message: 'Não consegui falar com a API (:4000).' }); }
+    catch { toast.push({ type: 'warn', title: 'Sem conexão', message: 'Não consegui falar com a API (:5000).' }); }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [fkey]);
   const refreshGeo = useCallback(async () => { try { setGeo(await api.netGeo(filters)); } catch {} }, [fkey]); // eslint-disable-line react-hooks/exhaustive-deps

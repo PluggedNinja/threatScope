@@ -13,10 +13,10 @@ Arquitetura **pull**: a central conecta em cada agente e busca as capturas — o
 ```
                         ┌──────────────────────────┐
    agente (srv A) ◄─────┤                          │
-   :4000  SSH/WEB/NET   │        CENTRAL           │──► Dashboard (navegador)
+   :5001  SSH/WEB/NET   │        CENTRAL           │──► Dashboard (navegador)
                         │  (manager + coletor +    │
    agente (srv B) ◄─────┤   WebSocket + API HTTP)  │──► API pública /api/lookup
-   :4000                │                          │
+   :5001                │                          │
                         └──────────────────────────┘
 ```
 
@@ -44,7 +44,7 @@ npm install
 npm start
 ```
 
-Sobe em `http://localhost:4000` (API + WebSocket). Em outro terminal, o dashboard:
+Sobe em `http://localhost:5000` (API + WebSocket). Em outro terminal, o dashboard:
 
 ```bash
 cd client
@@ -93,7 +93,7 @@ a central. No modo público multi-tenant, o sensor que **você** registra fica v
 | **WEB** | Lê os logs do nginx/apache/IIS e classifica cada requisição. Só **lê** os logs, não altera nada. | leitura dos logs (grupo `adm`/`www-data` ou sudo) |
 | **NET** | Via `tcpdump`, resume conexões e detecta **port scans**. | `tcpdump` + root |
 
-> **Firewall:** libere a porta do sensor (padrão `4000/tcp`) **apenas para o IP da central**.
+> **Firewall:** libere a porta do sensor (padrão `5001/tcp`) **apenas para o IP da central**.
 > Isso é essencial no modo público — o token de coleta é compartilhado entre os sensores.
 
 ---
@@ -122,7 +122,7 @@ GET /api/lookup/<ip>
 ```
 
 ```bash
-curl http://SUA-CENTRAL:4000/api/lookup/203.0.113.10
+curl http://SUA-CENTRAL:5000/api/lookup/203.0.113.10
 ```
 
 ```json
@@ -153,7 +153,7 @@ POST /api/lookup      Content-Type: application/json
 ```
 
 ```bash
-curl -X POST http://SUA-CENTRAL:4000/api/lookup \
+curl -X POST http://SUA-CENTRAL:5000/api/lookup \
   -H 'Content-Type: application/json' \
   -d '{"ips":["1.2.3.4","5.6.7.8"]}'
 ```
@@ -172,7 +172,7 @@ GET /api/blocklist?minEvents=5&since=2026-07-01&kind=ssh
 
 ```bash
 # Exemplo: alimentar um ipset a partir do feed
-curl -s 'http://SUA-CENTRAL:4000/api/blocklist?format=txt&minEvents=3' \
+curl -s 'http://SUA-CENTRAL:5000/api/blocklist?format=txt&minEvents=3' \
   | while read ip; do ipset add threatscope "$ip" 2>/dev/null; done
 ```
 

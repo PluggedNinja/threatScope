@@ -64,7 +64,7 @@ npm start
 
 No boot você verá um bloco roxo com o **token de admin** (`tsk_...`). Guarde-o.
 
-Testes rápidos de fumaça (outro terminal), trocando `PORTA` (padrão 4000):
+Testes rápidos de fumaça (outro terminal), trocando `PORTA` (padr?o 5000):
 
 ```bat
 :: público — sem token
@@ -99,7 +99,7 @@ atribuídos a ela.
    - ou no painel do admin → ⚙️ CONFIG (campo trustProxy), se preferir.
 3. **Aponte o pluggedninja** (proxy reverso HTTPS) para a porta da central, encaminhando
    `/`, `/api` e **`/ws`** (WebSocket precisa de upgrade de conexão).
-4. **Firewall dos sensores**: cada agente escuta em `:4000` — libere essa porta
+4. **Firewall dos sensores**: cada agente escuta em `:5001` — libere essa porta
    **apenas para o IP da central**.
 
 ### Por que `trustProxy` é obrigatório

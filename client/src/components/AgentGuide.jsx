@@ -25,7 +25,7 @@ const MODES = [
 export default function AgentGuide({ open, onClose, info, onRegistered, defaultMode = 'ssh' }) {
   const [mode, setMode] = useState(defaultMode);
   const [host, setHost] = useState('');
-  const [port, setPort] = useState(4000);
+  const [port, setPort] = useState(5001);
   const [name, setName] = useState('');
   const [busy, setBusy] = useState(false);
   const [msg, setMsg] = useState(null);
@@ -35,13 +35,13 @@ export default function AgentGuide({ open, onClose, info, onRegistered, defaultM
   const webActive = /web|both|all/.test(mode);
   const sshActive = /ssh|both|all/.test(mode);
   const netActive = /net|all/.test(mode);
-  const bundleUrl = `${api.agentBundleUrl(mode)}&port=${encodeURIComponent(port || 4000)}${name ? `&id=${encodeURIComponent(name)}` : ''}`;
+  const bundleUrl = `${api.agentBundleUrl(mode)}&port=${encodeURIComponent(port || 5001)}${name ? `&id=${encodeURIComponent(name)}` : ''}`;
 
   const register = async () => {
     if (!host.trim()) { setMsg({ type: 'warn', text: 'Informe o IP/host do servidor.' }); return; }
     setBusy(true); setMsg(null); sfx.click();
     try {
-      await api.addAgent({ host: host.trim(), port: Number(port) || 4000, name: name.trim() });
+      await api.addAgent({ host: host.trim(), port: Number(port) || 5001, name: name.trim() });
       sfx.success();
       setMsg({ type: 'ok', text: `Agente ${host.trim()}:${port} registrado! Depois você pode ajustar modo e logs pelo ⚙.` });
       setHost(''); setName('');
@@ -94,10 +94,10 @@ export default function AgentGuide({ open, onClose, info, onRegistered, defaultM
         {sshActive && (
           <p className="tiny muted">
             <b>Linux:</b> porta 22 exige root (sudo). Ocupada pelo SSH real? Use <b>HONEYPOT_PORT=2222</b> no <b>.env</b> e redirecione com iptables.<br />
-            <b>Windows:</b> dê duplo-clique em <b>start-agent.bat</b> (como Administrador p/ a porta 22, ou use <b>HONEYPOT_PORT=2222</b>). Libere a porta no firewall: <code>netsh advfirewall firewall add rule name="threatscope" dir=in action=allow protocol=TCP localport={port || 4000}</code>
+            <b>Windows:</b> dê duplo-clique em <b>start-agent.bat</b> (como Administrador p/ a porta 22, ou use <b>HONEYPOT_PORT=2222</b>). Libere a porta no firewall: <code>netsh advfirewall firewall add rule name="threatscope" dir=in action=allow protocol=TCP localport={port || 5001}</code>
           </p>
         )}
-        <p className="tiny muted">Libere a porta <b>{port || 4000}/tcp</b> no firewall do servidor para o IP da central.</p>
+        <p className="tiny muted">Libere a porta <b>{port || 5001}/tcp</b> no firewall do servidor para o IP da central.</p>
 
         <p className="step"><span className="n">4</span> Registre o servidor — a central passa a coletar e você pode configurá-lo pela interface:</p>
         <div className="reg-form">
@@ -105,7 +105,7 @@ export default function AgentGuide({ open, onClose, info, onRegistered, defaultM
             <input placeholder="ex: 203.0.113.10" value={host} onChange={(e) => setHost(e.target.value)} />
           </label>
           <label className="field">Porta
-            <input type="number" value={port} onChange={(e) => setPort(e.target.value)} style={{ width: 90 }} />
+            <input type="number" min="5000" max="65535" value={port} onChange={(e) => setPort(e.target.value)} style={{ width: 90 }} />
           </label>
           <label className="field">Nome (opcional)
             <input placeholder="ex: web-01" value={name} onChange={(e) => setName(e.target.value)} />

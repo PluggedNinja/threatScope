@@ -170,7 +170,7 @@ function Dashboard({ user = null, isAdmin = false, tenants = [], selectedTenant 
       g.forEach((row) => knownIps.current.add(row.ip));
       ag.forEach((row) => knownAgents.current.add(row.agent));
     } catch (e) {
-      toast.push({ type: 'warn', title: 'Sem conexão', message: 'Não consegui falar com a API (:4000). O servidor está rodando?' });
+      toast.push({ type: 'warn', title: 'Sem conexão', message: 'Não consegui falar com a API (:5000). O servidor está rodando?' });
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [fkey]);

@@ -49,7 +49,7 @@ export default function AgentConfig({ agent, open, onClose, onSaved }) {
       const c = await api.agentConfig(id);
       const ms = Math.round(performance.now() - t0);
       if (c && c.online) { setTestMsg({ type: 'ok', text: `✓ Online — ${ms}ms · v${c.version ?? '?'} · modo ${c.mode || '?'}` }); setState(c); setOffline(false); sfx.success(); }
-      else setTestMsg({ type: 'warn', text: `✗ Sem resposta do agente${c && c.error ? ' — ' + c.error : ''}. Verifique se ele está rodando e se a porta ${agent?.port || 4000}/tcp está liberada para a central.` });
+      else setTestMsg({ type: 'warn', text: `✗ Sem resposta do agente${c && c.error ? ' — ' + c.error : ''}. Verifique se ele está rodando e se a porta ${agent?.port || 5001}/tcp está liberada para a central.` });
     } catch (e) {
       setTestMsg({ type: 'warn', text: `✗ Falha ao contatar a central: ${e.message}` });
     } finally { setTesting(false); }
