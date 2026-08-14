@@ -551,7 +551,7 @@ export function listAgents() { return store.registry; }
 export function addAgent({ host, port = 5001, name = '', owner = null } = {}) {
   host = String(host || '').trim();
   port = Number(port) || 5001;
-  if (!Number.isInteger(port) || port < 5000 || port > 65535) return null;
+  if (!Number.isInteger(port) || port < 1 || port > 65535) return null;
   if (!host) return null;
   const id = `${host}:${port}`;
   const existing = store.registry.find((a) => a.id === id);
@@ -665,6 +665,10 @@ export function setSettings(patch) { store.settings = { ...(store.settings || {}
 // ---- Configuração da central (movida do .env para a interface web) ----------
 // A config vive em store.settings.config (persistida com a base). O .env só serve
 // de SEMENTE na primeira execução; depois disso a interface é a fonte da verdade.
+function generateIngestToken() {
+  return `tsi_${crypto.randomBytes(32).toString('hex')}`;
+}
+
 export const CONFIG_DEFAULTS = {
   apiPort: 5000,
   pollMs: 5000,
@@ -680,12 +684,14 @@ export const CONFIG_DEFAULTS = {
 };
 export function getConfig() { return { ...CONFIG_DEFAULTS, ...((store.settings && store.settings.config) || {}) }; }
 export function setConfig(patch) {
-  const next = { ...getConfig(), ...(patch || {}) };
+  const current = getConfig();
+  const currentToken = String(current.ingestToken || '').trim();
+  const next = { ...current, ...(patch || {}) };
   next.apiPort = Math.min(65535, Math.max(5000, Number(next.apiPort) || CONFIG_DEFAULTS.apiPort));
   next.pollMs = Math.max(1000, Number(next.pollMs) || CONFIG_DEFAULTS.pollMs);
   next.geoTtlDays = Math.max(0, Number(next.geoTtlDays) || 0);
   next.corsOrigin = String(next.corsOrigin || '*');
-  next.ingestToken = String(next.ingestToken || '');
+  next.ingestToken = String(next.ingestToken || '').trim() || currentToken || generateIngestToken();
   next.abuseipdbKey = String(next.abuseipdbKey || '');
   next.publicUrl = String(next.publicUrl || '');
   next.geoipDisable = !!next.geoipDisable;
@@ -697,12 +703,16 @@ export function setConfig(patch) {
 }
 // Semeia a config pelo ambiente só se ainda não existir (1ª execução / migração).
 export function seedConfigFromEnv(env = {}) {
-  if (store.settings && store.settings.config) return getConfig();
+  if (store.settings && store.settings.config) {
+    const currentToken = String(store.settings.config.ingestToken || '').trim();
+    if (!currentToken) setConfig({ ingestToken: generateIngestToken() });
+    return getConfig();
+  }
   setSettings({ config: {
     apiPort: Math.min(65535, Math.max(5000, Number(env.API_PORT) || CONFIG_DEFAULTS.apiPort)),
     pollMs: Number(env.POLL_MS) || CONFIG_DEFAULTS.pollMs,
     corsOrigin: env.CORS_ORIGIN || CONFIG_DEFAULTS.corsOrigin,
-    ingestToken: env.INGEST_TOKEN || CONFIG_DEFAULTS.ingestToken,
+    ingestToken: String(env.INGEST_TOKEN || '').trim() || generateIngestToken(),
     geoipDisable: env.GEOIP_DISABLE === '1' || env.GEOIP_DISABLE === 'true',
     geoTtlDays: Number(env.GEO_TTL_DAYS) || CONFIG_DEFAULTS.geoTtlDays,
     abuseipdbKey: env.ABUSEIPDB_KEY || '',

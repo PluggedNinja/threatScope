@@ -1,0 +1,18 @@
+{
+  "name": "design-intelligence",
+  "version": "0.1.0",
+  "description": "Design Intelligence plugin",
+  "author": {
+    "name": "Local developer"
+  },
+  "skills": "./skills/",
+  "interface": {
+    "displayName": "Design Intelligence",
+    "shortDescription": "Use Design Intelligence in Codex.",
+    "longDescription": "Design Intelligence adds a local Codex plugin scaffold.",
+    "developerName": "Local developer",
+    "category": "Productivity",
+    "capabilities": [],
+    "defaultPrompt": "Help me use Design Intelligence."
+  }
+}
