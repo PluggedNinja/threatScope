@@ -135,6 +135,7 @@ export const api = {
 
   // ---- conta / multi-tenant ----
   me: () => j('/api/me'),
+  recoverLocalAdmin: () => j('/api/local-admin/recover', { method: 'POST', headers: { 'X-ThreatScope-Local-Recovery': '1' } }),
   publicInfo: () => j('/api/public-info'),
   register: (name, email) => j('/api/public/register', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ name, email }) }),
   requestRemoval: (ip, email, message) => j('/api/public/removal', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ ip, email, message }) }),

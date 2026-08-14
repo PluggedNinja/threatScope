@@ -585,7 +585,18 @@ function Root() {
   useEffect(() => {
     let alive = true;
     api.me()
-      .then((m) => { if (!alive) return; setUser(m.user); if (m.isAdmin) loadTenants(); })
+      .then((m) => {
+        if (!alive) return;
+        // A direct localhost request can recover the admin account before this
+        // browser has a token. Persist the account's own token so later requests
+        // use normal token authentication and the account dialog can copy it.
+        if (!token && m.user?.token) {
+          setToken(m.user.token);
+          setTok(m.user.token);
+        }
+        setUser(m.user);
+        if (m.isAdmin) loadTenants();
+      })
       .catch((e) => {
         if (!alive) return;
         if (e.code === 401 || e.code === 403) { if (token) { clearToken(); setTok(''); } setUser(null); setTenants([]); }

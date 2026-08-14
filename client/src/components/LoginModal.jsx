@@ -25,6 +25,24 @@ export default function LoginModal({ open, onClose, onLoggedIn }) {
     }
   };
 
+  const localAdmin = async () => {
+    setState({ loading: true, err: null });
+    setToken('');
+    try {
+      const me = await api.recoverLocalAdmin();
+      if (!me.isAdmin || !me.user?.token) throw new Error('local admin unavailable');
+      setToken(me.user.token);
+      setState({ loading: false, err: null });
+      onLoggedIn?.(me);
+    } catch {
+      setToken('');
+      setState({
+        loading: false,
+        err: 'A recuperação só funciona abrindo o ThreatScope diretamente em localhost no servidor, com o acesso local habilitado.',
+      });
+    }
+  };
+
   return (
     <Modal open={open} title="🔐 Entrar no painel" onClose={onClose} width={460}>
       <form onSubmit={submit}>
@@ -41,6 +59,10 @@ export default function LoginModal({ open, onClose, onLoggedIn }) {
         <div className="flex" style={{ marginTop: 16 }}>
           <button className="primary" disabled={state.loading}>{state.loading ? 'Verificando…' : 'Entrar'}</button>
           <button type="button" className="right" onClick={onClose}>Cancelar</button>
+        </div>
+        <div style={{ borderTop: '1px solid var(--green-deep,#264)', marginTop: 16, paddingTop: 14 }}>
+          <button type="button" className="tiny" disabled={state.loading} onClick={localAdmin}>Entrar como administrador local</button>
+          <p className="tiny muted" style={{ margin: '8px 0 0' }}>Sem token? Abra esta página diretamente no servidor via <code>localhost</code> e use este botão. O token será recuperado e salvo neste navegador.</p>
         </div>
       </form>
     </Modal>

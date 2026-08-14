@@ -6,7 +6,9 @@ import { getToken } from '../api.js';
    download dos sensores) e permite copiar. */
 export default function AccountModal({ open, onClose, user }) {
   const [copied, setCopied] = useState(false);
-  const token = getToken();
+  // During localhost recovery /api/me may return the token just before it is
+  // persisted in localStorage, so accept the current user value as a fallback.
+  const token = getToken() || user?.token || '';
   const copy = async () => {
     try { await navigator.clipboard.writeText(token); setCopied(true); setTimeout(() => setCopied(false), 1500); } catch {}
   };

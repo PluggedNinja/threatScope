@@ -454,6 +454,7 @@ export function createApi({ broadcast = () => {}, onAgentAdded = () => {}, autob
   function isPublicPath(p) {
     if (p === '/api/health') return true;
     if (p === '/api/public-info') return true;
+    if (p === '/api/local-admin/recover') return true;
     if (p === '/api/blocklist') return true;
     if (p === '/api/lookup' || p.startsWith('/api/lookup/')) return true;
     if (p.startsWith('/api/public/')) return true;
@@ -1031,6 +1032,27 @@ export function createApi({ broadcast = () => {}, onAgentAdded = () => {}, autob
   });
 
   // Info para o guia de instalação de agentes no dashboard.
+  // Token recovery is deliberately narrower than the optional localhost-admin
+  // bypass: it only accepts a direct loopback request to a local Host, with no
+  // proxy headers, plus an explicit custom header (which also prevents a simple
+  // cross-origin form from triggering it).
+  app.post('/api/local-admin/recover', (req, res) => {
+    const socketIp = String(req.socket?.remoteAddress || '');
+    const loopback = socketIp === '127.0.0.1' || socketIp === '::1' || socketIp === '::ffff:127.0.0.1';
+    const host = String(req.headers.host || '').trim().toLowerCase();
+    const localHost = /^(localhost|127\.0\.0\.1)(:\d+)?$/.test(host) || /^\[::1\](?::\d+)?$/.test(host);
+    const forwarded = req.headers.forwarded || req.headers['x-forwarded-for'] || req.headers['x-real-ip'] || req.headers['x-forwarded-host'];
+    const confirmed = req.headers['x-threatscope-local-recovery'] === '1';
+    if (!loopback || !localHost || forwarded || !confirmed) {
+      return res.status(403).json({ error: 'recuperacao disponivel somente por acesso direto em localhost' });
+    }
+    if (!rateLimit(req, 'local-admin-recovery', 10, 60000)) {
+      return res.status(429).json({ error: 'muitas tentativas - aguarde 1 minuto' });
+    }
+    const admin = db.seedAdmin().admin;
+    res.json({ user: db.publicUser(admin, { withToken: true }), isAdmin: true });
+  });
+
   app.get('/api/manager-info', (_req, res) => {
     res.json({
       apiPort: db.getConfig().apiPort,

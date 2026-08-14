@@ -69,7 +69,11 @@ if (created) {
   console.log(`\x1b[35m    (conta: ${admin.email}) — regenerável no painel do admin.\x1b[0m`);
   console.log('\x1b[35m════════════════════════════════════════════════════════════════\x1b[0m');
 } else {
-  console.log(`👑  Admin: ${admin.email}. Token de API já definido (veja o painel do admin > sua conta).`);
+  console.log('================================================================');
+  console.log('👑  TOKEN ADMIN para login no painel (mantenha em segredo):');
+  console.log(`    ${admin.token}`);
+  console.log(`    (conta: ${admin.email}) - regeneravel no painel do admin.`);
+  console.log('================================================================');
 }
 if (db.getConfig().trustProxy || process.env.TRUST_PROXY === '1') {
   console.log('\x1b[33m🔒  TRUST_PROXY ativo: bypass de admin-localhost DESLIGADO — use o token de admin para logar.\x1b[0m');
