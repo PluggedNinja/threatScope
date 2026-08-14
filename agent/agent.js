@@ -22,8 +22,8 @@ const CONFIG_FILE = process.env.AGENT_CONFIG || path.join(__dirname, 'agent-conf
 const INGEST_TOKEN = process.env.INGEST_TOKEN || 'troque-este-token';
 const AGENT_ID = process.env.AGENT_ID || os.hostname();
 const AGENT_PORT = Number(process.env.AGENT_PORT || 5001);
-if (!Number.isInteger(AGENT_PORT) || AGENT_PORT < 5000 || AGENT_PORT > 65535) {
-  throw new Error('AGENT_PORT deve estar entre 5000 e 65535 (padrao: 5001).');
+if (!Number.isInteger(AGENT_PORT) || AGENT_PORT < 1 || AGENT_PORT > 65535) {
+  throw new Error('AGENT_PORT deve estar entre 1 e 65535 (padrao: 5001).');
 }
 const HONEYPOT_PORT = Number(process.env.HONEYPOT_PORT || 22);
 const BANNER = process.env.BANNER || 'SSH-2.0-OpenSSH_8.9p1 Ubuntu-3ubuntu0.1';

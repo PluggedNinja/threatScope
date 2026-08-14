@@ -761,8 +761,8 @@ export function createApi({ broadcast = () => {}, onAgentAdded = () => {}, autob
     const { host, port, name, owner } = req.body || {};
     if (!host || !String(host).trim()) return res.status(400).json({ error: 'informe o host/IP do agente' });
     const agentPort = Number(port) || 5001;
-    if (!Number.isInteger(agentPort) || agentPort < 5000 || agentPort > 65535) {
-      return res.status(400).json({ error: 'a porta do agente deve estar entre 5000 e 65535' });
+    if (!Number.isInteger(agentPort) || agentPort < 1 || agentPort > 65535) {
+      return res.status(400).json({ error: 'a porta do agente deve estar entre 1 e 65535' });
     }
     // ANTI-SSRF: tenant (não-admin) não pode apontar o coletor para rede interna/
     // loopback/metadata — senão a central entregaria o token de coleta a esse host.
@@ -1049,7 +1049,7 @@ export function createApi({ broadcast = () => {}, onAgentAdded = () => {}, autob
     }
     const agentId = typeof req.query.id === 'string' ? req.query.id : '';
     const requestedPort = Number(req.query.port) || 5001;
-    const agentPort = Number.isInteger(requestedPort) && requestedPort >= 5000 && requestedPort <= 65535 ? requestedPort : 5001;
+    const agentPort = Number.isInteger(requestedPort) && requestedPort >= 1 && requestedPort <= 65535 ? requestedPort : 5001;
     const rawMode = String(req.query.mode || 'ssh').toLowerCase();
     const modeOk = rawMode.split(/[,+\s]+/).every((x) => ['ssh', 'web', 'net', 'both', 'all', ''].includes(x));
     const mode = modeOk ? rawMode : 'ssh';

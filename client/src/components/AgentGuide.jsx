@@ -105,7 +105,7 @@ export default function AgentGuide({ open, onClose, info, onRegistered, defaultM
             <input placeholder="ex: 203.0.113.10" value={host} onChange={(e) => setHost(e.target.value)} />
           </label>
           <label className="field">Porta
-            <input type="number" min="5000" max="65535" value={port} onChange={(e) => setPort(e.target.value)} style={{ width: 90 }} />
+            <input type="number" min="1" max="65535" value={port} onChange={(e) => setPort(e.target.value)} style={{ width: 90 }} />
           </label>
           <label className="field">Nome (opcional)
             <input placeholder="ex: web-01" value={name} onChange={(e) => setName(e.target.value)} />
